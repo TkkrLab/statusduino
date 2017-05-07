@@ -2,7 +2,8 @@
 #include <Ethernet.h>
 #include <PubSubClient.h>
 
-volatile byte state = LOW;
+volatile byte state = HIGH;
+volatile byte state_old = LOW;
 
 // Update these with values suitable for your network.
 byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0x08, 0xED };
@@ -26,8 +27,12 @@ void printIP()
 void editSwitchState()
 {
   state = !digitalRead(2);
-  digitalWrite(9, state);
-  sendMQTT();
+  if (state != state_old)
+  {
+    digitalWrite(9, state);
+    sendMQTT();
+    state_old = state;
+  }
 }
 
 void sendMQTT()
